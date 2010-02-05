@@ -1,4 +1,4 @@
-File::Pid::Quick version 1.00
+File::Pid::Quick version 1.01
 =============================
 
 This module provides PID file based prevention of concurrent instances of
@@ -17,6 +17,6 @@ AUTHOR
     Matthew Sheahan, <chaos@lostsouls.org>
 
 COPYRIGHT
-    Copyright (c) 2007 Matthew Sheahan.  All rights reserved.
+    Copyright (c) 2007, 2010 Matthew Sheahan.  All rights reserved.
     This module is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
