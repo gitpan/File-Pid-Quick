@@ -24,7 +24,7 @@ File::Pid::Quick->check('/var/run/myjob.pid');
   
 =cut
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 use Carp;
 use Fcntl qw( :flock );
@@ -125,11 +125,15 @@ END {
     foreach my $pid_file_created (@pid_files_created) {
         my $pid_in = new IO::Handle;
         next
-            unless open $pid_in, $pid_file_created;
+            unless open $pid_in, '<', $pid_file_created;
         my $pid = <$pid_in>;
         chomp $pid;
         $pid =~ s/\s.*//o;
         if($pid == $$) {
+	        if($^O =~ /^MSWin/) {
+		        close $pid_in;
+		        undef $pid_in;
+			}
             if(unlink $pid_file_created) {
                 warn "Deleted $pid_file_created for PID $$\n"
                     if $verbose;
@@ -140,7 +144,8 @@ END {
             warn "$pid_file_created had PID $pid, not $$, leaving in place\n"
                 if $verbose;
         }
-        close $pid_in;
+        close $pid_in
+	        if defined $pid_in;
     }
 }
 
@@ -195,7 +200,7 @@ sub check($;$$$) {
         }
     }
     my $pid_in = new IO::Handle;
-    if(open $pid_in, $pid_file) {
+    if(open $pid_in, '<', $pid_file) {
         flock $pid_in, LOCK_SH;
         my $pid_data = <$pid_in>;
         chomp $pid_data;
@@ -227,7 +232,7 @@ sub check($;$$$) {
     }
     unless(grep { $_ eq $pid_file } @pid_files_created) {
         my $pid_out = new IO::Handle;
-        unless(open $pid_out, ">$pid_file") {
+        unless(open $pid_out, '>', $pid_file) {
             if($warn_and_exit) {
                 warn "Cannot write $pid_file: $!\n";
                 exit 1;
@@ -292,7 +297,7 @@ Matthew Sheahan, E<lt>chaos@lostsouls.orgE<gt>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2007 Matthew Sheahan.  All rights reserved.
+Copyright (c) 2007, 2010 Matthew Sheahan.  All rights reserved.
 This module is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
 
