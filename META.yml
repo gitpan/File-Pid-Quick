@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                File-Pid-Quick
-version:             1.01
+version:             1.02
 abstract:            Quick PID file implementation
 license:             ~
 author:              

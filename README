@@ -1,4 +1,4 @@
-File::Pid::Quick version 1.01
+File::Pid::Quick version 1.02
 =============================
 
 This module provides PID file based prevention of concurrent instances of

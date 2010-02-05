@@ -24,13 +24,12 @@ File::Pid::Quick->check('/var/run/myjob.pid');
   
 =cut
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 use Carp;
 use Fcntl qw( :flock );
 use File::Basename qw( basename );
 use File::Spec::Functions qw( tmpdir catfile );
-use IO::Handle;
 
 =head1 DESCRIPTION
 
@@ -123,9 +122,8 @@ sub import($;@) {
 
 END {
     foreach my $pid_file_created (@pid_files_created) {
-        my $pid_in = new IO::Handle;
         next
-            unless open $pid_in, '<', $pid_file_created;
+            unless open my $pid_in, '<', $pid_file_created;
         my $pid = <$pid_in>;
         chomp $pid;
         $pid =~ s/\s.*//o;
@@ -199,8 +197,7 @@ sub check($;$$$) {
             croak 'Invalid timeout "' . $use_timeout . '"';
         }
     }
-    my $pid_in = new IO::Handle;
-    if(open $pid_in, '<', $pid_file) {
+    if(open my $pid_in, '<', $pid_file) {
         flock $pid_in, LOCK_SH;
         my $pid_data = <$pid_in>;
         chomp $pid_data;
@@ -231,7 +228,7 @@ sub check($;$$$) {
         close $pid_in;
     }
     unless(grep { $_ eq $pid_file } @pid_files_created) {
-        my $pid_out = new IO::Handle;
+	    my $pid_out;
         unless(open $pid_out, '>', $pid_file) {
             if($warn_and_exit) {
                 warn "Cannot write $pid_file: $!\n";
